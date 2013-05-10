@@ -29,17 +29,15 @@ public class BeSupermanListener implements Listener{
         }
         @EventHandler
         public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-                Entity entity = event.getEntity();
-                Entity damager = event.getDamager();
-                if (damager instanceof Player) {
-                        if (supermen.contains(((Player)damager).getName())) {
-                                if (entity instanceof LivingEntity) {
-                                        ((LivingEntity)entity).setHealth(0);
-                                } else if (entity instanceof Player) {
-                                        Player player = (Player)entity;
-                                        player.setHealth(Math.max(player.getHealth() - 20, 0));
-                                }
-                        }
+            if (event.getEntity() instanceof LivingEntity){
+        	int health = ((Damageable) event.getEntity()).getHealth();
+            if(event.getDamager() instanceof Player){
+                Player player = (Player) event.getDamager();
+
+                  if(supermen.contains(event.getDamager())){
+                		  ((Damageable) event.getEntity()).setHealth(health-20);
+                		}
+                }
                 }
         }
        
