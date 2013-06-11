@@ -1,0 +1,3 @@
+#BeSuperman Configuration file
+#Set use-autoupdater to false if you don't want to be automatically updated.
+use-autoupdater: true

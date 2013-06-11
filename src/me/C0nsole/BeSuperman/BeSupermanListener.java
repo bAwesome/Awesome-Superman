@@ -6,13 +6,14 @@ package me.C0nsole.BeSuperman;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -29,15 +30,17 @@ public class BeSupermanListener implements Listener{
         }
         @EventHandler
         public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-            if (event.getEntity() instanceof LivingEntity){
-        	int health = ((Damageable) event.getEntity()).getHealth();
-            if(event.getDamager() instanceof Player){
-                Player player = (Player) event.getDamager();
-
-                  if(supermen.contains(event.getDamager())){
-                		  ((Damageable) event.getEntity()).setHealth(health-20);
-                		}
-                }
+                Entity entity = event.getEntity();
+                Entity damager = event.getDamager();
+                if (damager instanceof Player) {
+                        if (supermen.contains(((Player)damager).getName())) {
+                                if (entity instanceof LivingEntity) {
+                                        ((LivingEntity)entity).setHealth(0);
+                                } else if (entity instanceof Player) {
+                                        Player player = (Player)entity;
+                                        player.setHealth(Math.max(player.getHealth() - 20, 0));
+                                }
+                        }
                 }
         }
        
@@ -48,6 +51,7 @@ public class BeSupermanListener implements Listener{
         		player.setAllowFlight(false);
                 player.setFlying(false);
                 player.setMaxHealth(20);
+                player.setHealth(20);
                 Inventory inv = player.getInventory();
                 if(inv instanceof PlayerInventory){
                         PlayerInventory pinv = (PlayerInventory) inv;
@@ -55,9 +59,9 @@ public class BeSupermanListener implements Listener{
                         pinv.setHelmet(new ItemStack(Material.AIR));
                         pinv.setLeggings(new ItemStack(Material.AIR));
                         pinv.setBoots(new ItemStack(Material.AIR));
-                       
-                }
+                       }
                 player.removePotionEffect(PotionEffectType.WATER_BREATHING);
+                player.removePotionEffect(PotionEffectType.SPEED);
                 supermen.remove(player.getName());
                 }
         	}
@@ -66,12 +70,28 @@ public class BeSupermanListener implements Listener{
         public void onPlayerDeath(PlayerDeathEvent event) {
         	if(supermen.contains(event.getEntity())){
         		event.getEntity().removePotionEffect(PotionEffectType.WATER_BREATHING);
+                event.getEntity().removePotionEffect(PotionEffectType.SPEED);
         		event.getEntity().setAllowFlight(false);
         		event.getEntity().setFlying(false);
         		supermen.remove(event.getEntity());
         		event.getEntity().setMaxHealth(20);
         	}
         	
+        }
+        @EventHandler
+        public void onPlayerPickupItem(PlayerPickupItemEvent event){
+        	Player player = event.getPlayer();
+        	int health = player.getHealth();
+        	if(supermen.contains(player.getName())){
+        		if (event.getItem().getItemStack().getType() == Material.EMERALD) {
+        			if(health > 20){
+        				player.setHealth(health-20);
+        			}
+        			else if(health <= 20){
+        				player.setHealth(0);
+        			}
+        		}
+        	}
         }
   }
                

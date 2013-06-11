@@ -1,13 +1,10 @@
 name: BeSuperman
 main: me.C0nsole.BeSuperman.BeSuperman
-version: 1.0
+version: 2.4
 author: C0nsole
 commands:
-   supermanon:
-     description: Makes you be... SUPERMAN!
-     permission: superman.use
-   supermanoff:
-     description: Makes you be... normal.
+   superman:
+     description: Can display info, or change whether you are superman.
      permission: superman.use
 permissions:
    superman.use:
